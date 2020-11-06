@@ -1,0 +1,19 @@
+{
+  "name": "recipes",
+  "version": "1.0.0",
+  "description": "Recipe crud",
+  "main": "index.js",
+  "author": "Fowotade Babajide <jide.b.tade@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "path-to-regexp": "^6.2.0",
+    "qs": "^6.9.4"
+  }
+}
