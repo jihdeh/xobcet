@@ -20,11 +20,11 @@ const app: Application = {
    * ) - with added middleware
    *
    * @param {String} path request url path
-   * @param  {...Function} rest these are middleware callback funtions
+   * @param  {...Function} fns these are middleware callback funtions
    * @public
    */
-  get: function (path, ...rest) {
-    configurePath(path, rest, 'get', serverConfig.routeTable);
+  get: function (path, ...fns) {
+    configurePath(path, fns, 'get', serverConfig.routeTable);
   },
 
   /**
@@ -39,33 +39,33 @@ const app: Application = {
    * ) - with added middleware
    *
    * @param {String} path request url path
-   * @param  {...Function} rest these are middleware callback funtions
+   * @param  {...Function} fns these are middleware callback funtions
    * @public
    */
-  post: function (path, ...rest) {
-    configurePath(path, rest, 'post', serverConfig.routeTable);
+  post: function (path, ...fns) {
+    configurePath(path, fns, 'post', serverConfig.routeTable);
   },
 
   /**
    * Put configuration for PUT method request
    * @param {String} path request url path
-   * @param  {...Function} rest these are middleware callback funtions
+   * @param  {...Function} fns these are middleware callback funtions
    * @public
    */
 
-  put: (path, ...rest) => {
-    configurePath(path, rest, 'put', serverConfig.routeTable);
+  put: (path, ...fns) => {
+    configurePath(path, fns, 'put', serverConfig.routeTable);
   },
 
   /**
    * Delete configuration for DELETE method request
    * @param {String} path request url path
-   * @param  {...Function} rest these are middleware callback funtions
+   * @param  {...Function} fns these are middleware callback funtions
    * @public
    */
 
-  delete: (path, ...rest) => {
-    configurePath(path, rest, 'delete', serverConfig.routeTable);
+  delete: (path, ...fns) => {
+    configurePath(path, fns, 'delete', serverConfig.routeTable);
   },
 
   /**
@@ -83,7 +83,6 @@ const app: Application = {
    *      , app = server();
    *
    *    http.createServer(app).listen(80);
-   *    https.createServer({ ... }, app).listen(443);
    *
    * @return {http.Server}
    * @public
@@ -94,7 +93,7 @@ const app: Application = {
     // eslint-disable-next-line prefer-spread
     const [port, callback] = params;
     return server.listen(port, callback);
-  },
+  }
 };
 
 function Application(): Application {
@@ -105,4 +104,4 @@ function Application(): Application {
  * Expose `Application()`.
  */
 
-exports = module.exports = Application;
+export = module.exports = Application;

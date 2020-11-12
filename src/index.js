@@ -1,8 +1,8 @@
-const server = require('./serverx');
+const server = require('../server/lib/index.js');
 const app = server();
 
 app.get('/recipes', (req, res) => {
-  res.json(['recipes'])
+  res.json(['recipes']);
 });
 
 app.get('/recipes/:id', (req, res) => {
