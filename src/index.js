@@ -1,4 +1,5 @@
 const server = require('../server/lib/index.js');
+
 const app = server();
 
 app.get('/recipes', (req, res) => {
@@ -26,5 +27,6 @@ app.post('/recipes/:id/rating', (req, res) => {
 });
 
 app.listen(3000, () => {
+  // eslint-disable-next-line no-console
   console.log('Server running on 3000');
 });
