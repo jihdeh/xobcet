@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  mongodb-primary:
+    hostname: mongodb-primary
+    container_name: mongodb-primary
+    image: mongo:latest
+    expose:
+      - 27017
+    restart: always
+    volumes:
+      - mongodb-primary:/data/db
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      - node-network
+    logging:
+      driver: none
+
+  mongodb-secondary:
+    hostname: mongodb-secondary
+    container_name: mongodb-secondary
+    image: mongo:latest
+    expose:
+      - 27017
+    restart: always
+    volumes:
+      - mongodb-secondary:/data/db
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      - node-network
+    logging:
+      driver: none
+  
+  mongodb-secondary-cluster:
+    hostname: mongodb-secondary-cluster
+    container_name: mongodb-secondary-cluster
+    image: mongo:latest
+    expose:
+      - 27017
+    restart: always
+    volumes:
+      - mongodb-secondary-cluster:/data/db
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      - node-network
+    logging:
+      driver: none
+  
+  mongosetup:
+    image: mongo:latest
+    links:
+      - mongodb-primary:mongodb-primary
+      - mongodb-secondary:mongodb-secondary
+      - mongodb-secondary-cluster:mongodb-secondary-cluster
+    depends_on:
+      - mongodb-primary
+      - mongodb-secondary
+      - mongodb-secondary-cluster
+    volumes:
+      - ./config:/config
+    restart: "no"
+    entrypoint: [ "bash", "/config/mongo_setup.sh" ]
+    networks:
+      - node-network
+    logging:
+      driver: none
+
+volumes:
+  mongodb-primary:
+  mongodb-secondary:
+  mongodb-secondary-cluster:
+
+networks:
+  node-network:
+    driver: bridge

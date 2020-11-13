@@ -1,32 +1,38 @@
-const server = require('../server/lib/index.js');
+const mongoose = require('mongoose');
+const app = require('./app');
+const config = require('./config/config');
+const logger = require('./config/logger');
 
-const app = server();
-
-app.get('/recipes', (req, res) => {
-  res.json(['recipes']);
+let server;
+mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
+  logger.info('Connected to MongoDB');
+  server = app.listen(config.port, () => {
+    logger.info(`Listening to port ${config.port}`);
+  });
 });
 
-app.get('/recipes/:id', (req, res) => {
-  res.json(req.params);
-});
+const exitHandler = () => {
+  if (server) {
+    server.close(() => {
+      logger.info('Server closed');
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+};
 
-app.post('/recipes', (req, res) => {
-  res.json(['req.params']);
-});
+const unexpectedErrorHandler = (error) => {
+  logger.error(error);
+  exitHandler();
+};
 
-app.put('/recipes/:id', (req, res) => {
-  res.send('hey');
-});
+process.on('uncaughtException', unexpectedErrorHandler);
+process.on('unhandledRejection', unexpectedErrorHandler);
 
-app.delete('/recipes', (req, res) => {
-  res.send(req.body);
-});
-
-app.post('/recipes/:id/rating', (req, res) => {
-  res.send(req.body);
-});
-
-app.listen(3000, () => {
-  // eslint-disable-next-line no-console
-  console.log('Server running on 3000');
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received');
+  if (server) {
+    server.close();
+  }
 });
