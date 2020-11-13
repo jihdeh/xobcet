@@ -43,6 +43,8 @@
     "path-to-regexp": "^6.2.0",
     "qs": "^6.9.4",
     "server": "https://github.com/jihdeh/mini-servlet",
+    "short-uuid": "^4.1.0",
+    "validator": "^13.1.17",
     "winston": "^3.3.3"
   }
 }
