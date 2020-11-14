@@ -4,6 +4,11 @@ const { Recipe } = require('../models');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
+/**
+ * Controller to get a single recipe
+ * @public
+ * @returns {Recipe} Recipe object
+ */
 const getRecipe = catchAsync(async (req, res) => {
   const recipe = await Recipe.findOne({
     uniqueId: req.params.id,
@@ -15,11 +20,21 @@ const getRecipe = catchAsync(async (req, res) => {
   }
 });
 
+/**
+ * Contoller to get all recipes
+ * @public
+ * @returns {Array(Recipe)} An array of Recipes
+ */
 const getRecipes = catchAsync(async (req, res) => {
   const recipes = await Recipe.find();
   res.json(recipes);
 });
 
+/**
+ * Controller to create a recipe
+ * @private
+ * @return Newly created recipe object
+ */
 const createRecipe = catchAsync(async (req, res) => {
   try {
     const newRecipe = await Recipe.create(req.body);
@@ -29,6 +44,10 @@ const createRecipe = catchAsync(async (req, res) => {
   }
 });
 
+/**
+ * Controller to update a single recipe
+ * @private
+ */
 const updateRecipe = catchAsync(async (req, res) => {
   try {
     const update = await Recipe.updateOne(
@@ -49,13 +68,31 @@ const updateRecipe = catchAsync(async (req, res) => {
   }
 });
 
-const deleteRecipe = (req, res) => {
-  res.send(req.body);
-};
+/**
+ * Controller to delete a recipe
+ * @private
+ */
+const deleteRecipe = catchAsync(async (req, res) => {
+  try {
+    const deleteAction = await Recipe.deleteOne({
+      uniqueId: req.params.id,
+    });
+    if (deleteAction.n) {
+      res.send('Recipe deleted');
+    } else {
+      throw new AppError(httpStatus.NOT_IMPLEMENTED, 'Recipe not deleted');
+    }
+  } catch (error) {
+    throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
+  }
+});
 
-const rateRecipe = (req, res) => {
+/**
+ * Controller to rate a Recipe
+ */
+const rateRecipe = catchAsync(async (req, res) => {
   res.send(req.body);
-};
+});
 
 module.exports = {
   getRecipes,

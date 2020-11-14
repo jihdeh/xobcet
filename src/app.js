@@ -23,7 +23,7 @@ app.post('/recipes', createRecipeValidation, createRecipe);
 
 app.put('/recipes/:id', updateRecipeValidation, updateRecipe);
 
-app.delete('/recipes', deleteRecipe);
+app.delete('/recipes/:id', deleteRecipe);
 
 app.post('/recipes/:id/rating', rateRecipe);
 

@@ -8,7 +8,7 @@ const recipeSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      default: short.generate(),
+      default: short.generate,
       index: 1,
     },
     name: {
