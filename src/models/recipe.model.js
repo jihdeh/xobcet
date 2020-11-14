@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const short = require('short-uuid');
+const pick = require('lodash/pick');
 
 const recipeSchema = mongoose.Schema(
   {
@@ -9,10 +9,13 @@ const recipeSchema = mongoose.Schema(
       required: true,
       unique: true,
       default: short.generate(),
+      index: 1,
     },
     name: {
       type: String,
+      unique: true,
       required: true,
+      index: 1,
     },
     prepTime: {
       type: String,
@@ -21,12 +24,12 @@ const recipeSchema = mongoose.Schema(
     difficulty: {
       type: Number,
       validate(value) {
-        if (!validator.isInt(value, { min: 1, max: 3, allow_leading_zeroes: false })) {
+        if (!(value >= 1) && !(value <= 3)) {
           throw new Error('Difficulty is not in range 1 - 3');
         }
       },
     },
-    Vegetarian: {
+    vegetarian: {
       type: Boolean,
       default: false,
     },
@@ -42,6 +45,11 @@ const recipeSchema = mongoose.Schema(
  * Methods
  */
 recipeSchema.statics = {};
+
+recipeSchema.methods.transform = function () {
+  const recipe = this;
+  return pick(recipe.toJSON(), ['vegetarian', 'uniqueId', 'name', 'difficulty', 'prepTime']);
+};
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 

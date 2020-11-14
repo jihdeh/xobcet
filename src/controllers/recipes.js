@@ -1,14 +1,33 @@
-const getRecipe = (req, res) => {
-  res.json(req.params);
-};
+const httpStatus = require('http-status');
 
-const getRecipes = (req, res) => {
-  res.json(['recipes']);
-};
+const { Recipe } = require('../models');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/AppError');
 
-const createRecipe = (req, res) => {
-  res.json(['req.params']);
-};
+const getRecipe = catchAsync(async (req, res) => {
+  const recipe = await Recipe.findOne({
+    uniqueId: req.params.id,
+  });
+  if (recipe) {
+    res.json(recipe.transform());
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, 'Recipe not found');
+  }
+});
+
+const getRecipes = catchAsync(async (req, res) => {
+  const recipes = await Recipe.find();
+  res.json(recipes);
+});
+
+const createRecipe = catchAsync(async (req, res) => {
+  try {
+    const newRecipe = await Recipe.create(req.body);
+    res.json(newRecipe);
+  } catch (error) {
+    throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
+  }
+});
 
 const updateRecipe = (req, res) => {
   res.send('hey');
