@@ -1,10 +1,11 @@
 const httpStatus = require('http-status');
 const RateLimiter = require('async-ratelimiter');
 const { getClientIp } = require('request-ip');
-const Redis = require('ioredis');
+
+const RedisClient = require('../utils/cache');
 
 const rateLimiter = new RateLimiter({
-  db: new Redis(),
+  db: RedisClient.redisClient(),
   max: 3,
   duration: 60000, // 1min of restriction
 });
