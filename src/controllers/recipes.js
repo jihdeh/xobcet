@@ -29,9 +29,25 @@ const createRecipe = catchAsync(async (req, res) => {
   }
 });
 
-const updateRecipe = (req, res) => {
-  res.send('hey');
-};
+const updateRecipe = catchAsync(async (req, res) => {
+  try {
+    const update = await Recipe.updateOne(
+      {
+        uniqueId: req.params.id,
+      },
+      {
+        ...req.body,
+      },
+    );
+    if (update.nModified) {
+      res.send('Recipe updated');
+    } else {
+      throw new AppError(httpStatus.NOT_IMPLEMENTED, 'Recipe not updated');
+    }
+  } catch (error) {
+    throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
+  }
+});
 
 const deleteRecipe = (req, res) => {
   res.send(req.body);

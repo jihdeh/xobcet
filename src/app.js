@@ -8,7 +8,10 @@ const {
   deleteRecipe,
   rateRecipe,
 } = require('./controllers/recipes.js');
-const { createRecipeValidation } = require('./validations/recipe.validation');
+const {
+  createRecipeValidation,
+  updateRecipeValidation,
+} = require('./validations/recipe.validation');
 
 const app = server();
 
@@ -18,7 +21,7 @@ app.get('/recipes/:id', getRecipe);
 
 app.post('/recipes', createRecipeValidation, createRecipe);
 
-app.put('/recipes/:id', updateRecipe);
+app.put('/recipes/:id', updateRecipeValidation, updateRecipe);
 
 app.delete('/recipes', deleteRecipe);
 
