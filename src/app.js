@@ -8,6 +8,7 @@ const {
   deleteRecipe,
   rateRecipe,
 } = require('./controllers/recipes.js');
+const apiQuota = require('./middleware/rateLimiter.js');
 const {
   createRecipeValidation,
   updateRecipeValidation,
@@ -20,12 +21,12 @@ app.get('/recipes', getRecipes);
 
 app.get('/recipes/:id', getRecipe);
 
-app.post('/recipes', createRecipeValidation, createRecipe);
+app.post('/recipes', apiQuota, createRecipeValidation, createRecipe);
 
-app.put('/recipes/:id', updateRecipeValidation, updateRecipe);
+app.put('/recipes/:id', apiQuota, updateRecipeValidation, updateRecipe);
 
-app.delete('/recipes/:id', deleteRecipe);
+app.delete('/recipes/:id', apiQuota, deleteRecipe);
 
-app.post('/recipes/:id/rating', rateRecipeValidation, rateRecipe);
+app.post('/recipes/:id/rating', apiQuota, rateRecipeValidation, rateRecipe);
 
 module.exports = app;
