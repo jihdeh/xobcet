@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 
-const { Recipe } = require('../models');
+const { Recipe, Rating } = require('../models');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
@@ -58,6 +58,7 @@ const updateRecipe = catchAsync(async (req, res) => {
         ...req.body,
       },
     );
+
     if (update.nModified) {
       res.send('Recipe updated');
     } else {
@@ -77,6 +78,7 @@ const deleteRecipe = catchAsync(async (req, res) => {
     const deleteAction = await Recipe.deleteOne({
       uniqueId: req.params.id,
     });
+
     if (deleteAction.n) {
       res.send('Recipe deleted');
     } else {
@@ -89,9 +91,25 @@ const deleteRecipe = catchAsync(async (req, res) => {
 
 /**
  * Controller to rate a Recipe
+ * @private
  */
 const rateRecipe = catchAsync(async (req, res) => {
-  res.send(req.body);
+  try {
+    const recipe = await Recipe.findOne({ uniqueId: req.params.id }).select('id');
+
+    if (!recipe) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Recipe not found');
+    }
+
+    const rate = await Rating.create({
+      rating: req.body.rating,
+      recipe: recipe.id,
+    });
+
+    res.json(rate);
+  } catch (error) {
+    throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
+  }
 });
 
 module.exports = {

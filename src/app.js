@@ -11,6 +11,7 @@ const {
 const {
   createRecipeValidation,
   updateRecipeValidation,
+  rateRecipeValidation,
 } = require('./validations/recipe.validation');
 
 const app = server();
@@ -25,6 +26,6 @@ app.put('/recipes/:id', updateRecipeValidation, updateRecipe);
 
 app.delete('/recipes/:id', deleteRecipe);
 
-app.post('/recipes/:id/rating', rateRecipe);
+app.post('/recipes/:id/rating', rateRecipeValidation, rateRecipe);
 
 module.exports = app;

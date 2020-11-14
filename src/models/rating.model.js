@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const ratingSchema = mongoose.Schema(
   {
-    rate: {
+    rating: {
       type: Number,
       required: true,
       validate(value) {
-        if (!(value >= 1) && !(value <= 3)) {
-          throw new Error('Difficulty is not in range 1 - 3');
+        if (!(value >= 1) && !(value <= 5)) {
+          throw new Error('Rating is not in range 1 - 5');
         }
       },
     },
