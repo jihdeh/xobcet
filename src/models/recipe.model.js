@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const short = require('short-uuid');
 const pick = require('lodash/pick');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const recipeSchema = mongoose.Schema(
   {
@@ -50,6 +51,8 @@ recipeSchema.methods.transform = function () {
   const recipe = this;
   return pick(recipe.toJSON(), ['vegetarian', 'uniqueId', 'name', 'difficulty', 'prepTime']);
 };
+
+recipeSchema.plugin(mongoosePaginate);
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 

@@ -26,7 +26,15 @@ const getRecipe = catchAsync(async (req, res) => {
  * @returns {Array(Recipe)} An array of Recipes
  */
 const getRecipes = catchAsync(async (req, res) => {
-  const recipes = await Recipe.find();
+  const { limit = 10, page = 1 } = req.query;
+  const recipes = await Recipe.paginate(
+    {},
+    {
+      limit,
+      page,
+      lean: true,
+    },
+  );
   res.json(recipes);
 });
 
