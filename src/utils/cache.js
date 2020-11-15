@@ -2,7 +2,7 @@ const Redis = require('ioredis');
 const { redis } = require('../config/config');
 
 class RedisCache {
-  constructor(ttl = redis.REDIS_TTL) {
+  constructor(ttl = redis.ttl) {
     this._redis = new Redis({
       port: redis.port,
       host: redis.host,
@@ -21,8 +21,8 @@ class RedisCache {
     return setValue;
   }
 
-  get(key) {
-    const value = this._redis.get(key);
+  async get(key) {
+    const value = await this._redis.get(key);
     const validTypes = typeof value === 'string';
     if (value && validTypes) {
       const parseValue = JSON.parse(value);

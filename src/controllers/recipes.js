@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 
 const { Recipe, Rating } = require('../models');
+const Redis = require('../utils/cache');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
@@ -27,6 +28,13 @@ const getRecipe = catchAsync(async (req, res) => {
  */
 const getRecipes = catchAsync(async (req, res) => {
   const { limit = 10, page = 1 } = req.query;
+  const cacheKey = `get-recipes-${limit}-${page}`;
+
+  const getFromCache = await Redis.get(cacheKey);
+  if (getFromCache) {
+    return res.json(getFromCache);
+  }
+
   const recipes = await Recipe.paginate(
     {},
     {
@@ -35,6 +43,7 @@ const getRecipes = catchAsync(async (req, res) => {
       lean: true,
     },
   );
+  await Redis.set(cacheKey, recipes);
   res.json(recipes);
 });
 
