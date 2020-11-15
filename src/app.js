@@ -15,7 +15,7 @@ const {
   rateRecipeValidation,
 } = require('./validations/recipe.validation');
 
-const app = server();
+const { Servlets: app, Server: Core } = server();
 
 app.get('/recipes', getRecipes);
 
@@ -29,4 +29,4 @@ app.delete('/recipes/:id', apiQuota, deleteRecipe);
 
 app.post('/recipes/:id/rating', apiQuota, rateRecipeValidation, rateRecipe);
 
-module.exports = app;
+module.exports = { app, Core };
