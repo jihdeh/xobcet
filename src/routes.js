@@ -2,7 +2,7 @@ const RECIPES = '/recipes';
 
 const RECIPES_ID = '/recipes/:id';
 
-const RECIPES_RATING = `${RECIPES_ID}/ratings`;
+const RECIPES_RATING = `${RECIPES_ID}/rating`;
 
 module.exports = {
   RECIPES,

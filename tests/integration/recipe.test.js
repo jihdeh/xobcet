@@ -6,6 +6,8 @@ const httpStatus = require('http-status');
 const IoRedis = require('ioredis');
 const RateLimiterLib = require('async-ratelimiter');
 
+const { auth } = require('../../src/config/config');
+
 jest.mock('ioredis', () => {
   const Redis = require('ioredis-mock');
   if (typeof Redis === 'object') {
@@ -110,16 +112,38 @@ describe('Recipe routes', () => {
 
   describe('POST /recipes', () => {
     test('should create a new recipe', async () => {
-      const res = await request(app).post('/recipes').send(newRecipe).expect(httpStatus.OK);
+      const res = await request(app)
+        .post('/recipes')
+        .auth(auth.username, auth.password)
+        .send(newRecipe)
+        .expect(httpStatus.OK);
       expect(res.body.name).toBeDefined();
       expect(res.body.uniqueId).toBeDefined();
       expect(res.body.difficulty).toBeDefined();
+    });
+
+    test('should report missing header when create a new recipe with no auth header', async () => {
+      const res = await request(app)
+        .post('/recipes')
+        .send(newRecipe)
+        .expect(httpStatus.UNAUTHORIZED);
+      expect(res.body.message).toEqual('Missing Authorization Header');
+    });
+
+    test('should throw unathorized when create a new recipe with wrong credentials', async () => {
+      const res = await request(app)
+        .post('/recipes')
+        .auth('wrongUsername', 'wrongPasswrd')
+        .send(newRecipe)
+        .expect(httpStatus.UNAUTHORIZED);
+      expect(res.body.message).toEqual('Invalid Authentication Credentials');
     });
 
     test('should throw an error when required recipe field "name" is missing', async () => {
       newRecipe.name = '';
       const res = await request(app)
         .post('/recipes')
+        .auth(auth.username, auth.password)
         .send(newRecipe)
         .expect(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.body[0].message).toEqual('"name" is not allowed to be empty');
@@ -129,6 +153,7 @@ describe('Recipe routes', () => {
       newRecipe.difficulty = 10;
       const res = await request(app)
         .post('/recipes')
+        .auth(auth.username, auth.password)
         .send(newRecipe)
         .expect(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.body[0].message).toEqual('"difficulty" must be less than or equal to 3');
@@ -143,14 +168,20 @@ describe('Recipe routes', () => {
 
     test('should update recipe', async () => {
       recipe.name = 'Regalia';
-      const res = await request(app).put(`/recipes/${recipe.uniqueId}`).send(newRecipe);
+      const res = await request(app)
+        .put(`/recipes/${recipe.uniqueId}`)
+        .auth(auth.username, auth.password)
+        .send(newRecipe);
       expect(res.text).toBeDefined();
       expect(res.text).toEqual('Recipe updated');
     });
 
     test('should throw on update recipe with wrong id', async () => {
       recipe.name = 'Regalia';
-      const res = await request(app).put(`/recipes/errorId`).send(newRecipe);
+      const res = await request(app)
+        .put(`/recipes/errorId`)
+        .auth(auth.username, auth.password)
+        .send(newRecipe);
 
       expect(res.body.code).toEqual(501);
       expect(res.body.message).toEqual('Recipe not updated');
@@ -165,13 +196,19 @@ describe('Recipe routes', () => {
     });
 
     test('should delete a  recipe', async () => {
-      const res = await request(app).delete(`/recipes/${recipe.uniqueId}`).send(recipe);
+      const res = await request(app)
+        .delete(`/recipes/${recipe.uniqueId}`)
+        .auth(auth.username, auth.password)
+        .send(recipe);
       expect(res.text).toBeDefined();
       expect(res.text).toEqual('Recipe deleted');
     });
 
     test('should throw on delete a recipe with wrong id', async () => {
-      const res = await request(app).delete(`/recipes/wrongid`).send(recipe);
+      const res = await request(app)
+        .delete(`/recipes/wrongid`)
+        .auth(auth.username, auth.password)
+        .send(recipe);
       expect(res.body.code).toEqual(501);
       expect(res.body.message).toEqual('Recipe not deleted');
     });

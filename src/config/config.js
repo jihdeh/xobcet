@@ -13,7 +13,8 @@ const envVarsSchema = Joi.object()
     REDIS_PORT: Joi.string().required().description('Redis port'),
     REDIS_TTL: Joi.string().required().description('Redis ttl'),
     REDIS_PASSWORD: Joi.string().required().description('Redis password'),
-    JWT_SECRET: Joi.string().required().description('JWT secret key'),
+    AUTH_USERNAME: Joi.string().required().description('Authorized user key'),
+    AUTH_PASSWORD: Joi.string().required().description('Authorized password key'),
   })
   .unknown();
 
@@ -32,13 +33,14 @@ module.exports = {
     url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     options: { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true },
   },
-  jwt: {
-    secret: envVars.JWT_SECRET,
-  },
   redis: {
     host: envVars.REDIS_HOST,
     port: envVars.REDIS_PORT,
     ttl: envVars.REDIS_TTL,
     password: envVars.REDIS_PASSWORD,
+  },
+  auth: {
+    username: envVars.AUTH_USERNAME,
+    password: envVars.AUTH_PASSWORD,
   },
 };

@@ -4,7 +4,6 @@ const config = require('../../src/config/config');
 const setupTestDB = () => {
   beforeAll(async () => {
     await mongoose.connect(config.mongoose.url, config.mongoose.options);
-    await mongoose.connection.db.dropDatabase();
   });
 
   beforeEach(async () => {

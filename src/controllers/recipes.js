@@ -63,6 +63,7 @@ const createRecipe = catchAsync(async (req, res) => {
 
 /**
  * Controller to update a single recipe
+ * @param {String} id - The unique id of the recipe
  * @private
  */
 const updateRecipe = catchAsync(async (req, res) => {
@@ -88,6 +89,7 @@ const updateRecipe = catchAsync(async (req, res) => {
 
 /**
  * Controller to delete a recipe
+ * @param {String} id - The unique id of the recipe
  * @private
  */
 const deleteRecipe = catchAsync(async (req, res) => {
@@ -108,19 +110,30 @@ const deleteRecipe = catchAsync(async (req, res) => {
 
 /**
  * Controller to rate a Recipe
+ * @param {String} id - The unique id of the recipe
  * @private
  */
 const rateRecipe = catchAsync(async (req, res) => {
   try {
-    const recipe = await Recipe.findOne({ uniqueId: req.params.id }).select('id');
+    const uniqueId = req.params.id;
+    const cacheKey = `rate-recipe-${uniqueId}`;
+    const getFromCache = await Redis.get(cacheKey);
 
-    if (!recipe) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Recipe not found');
+    let recipeId = getFromCache || null;
+
+    if (!recipeId) {
+      recipeId = await Recipe.findOne({ uniqueId }).select('id');
+
+      if (!recipeId) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Recipe not found');
+      }
+
+      await Redis.set(cacheKey, recipeId.id);
     }
 
     const rate = await Rating.create({
       rating: req.body.rating,
-      recipe: recipe.id,
+      recipe: recipeId,
     });
 
     res.json(rate);

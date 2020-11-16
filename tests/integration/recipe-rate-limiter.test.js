@@ -6,6 +6,7 @@ const IoRedis = require('ioredis');
 
 const { Core: app } = require('../../src/app');
 const dbConfig = require('../utils/dbConfig');
+const { auth } = require('../../src/config/config');
 
 dbConfig();
 
@@ -29,19 +30,34 @@ describe('Rate Limiter Test', () => {
   let newRecipe;
 
   beforeEach(() => {
-    newRecipe = {
+    newRecipe = () => ({
       name: faker.lorem.word(),
       prepTime: `${faker.random.number(60)} mins`,
       difficulty: faker.random.number({ min: 1, max: 3 }),
       vegetarian: faker.random.boolean(),
-    };
+    });
   });
 
   test('should trigger rate limit on 3rd consequetive click', async () => {
-    await request(app).post('/recipes').send(newRecipe).expect(httpStatus.OK);
-    await request(app).post('/recipes').send(newRecipe).expect(httpStatus.OK);
-    await request(app).post('/recipes').send(newRecipe).expect(httpStatus.OK);
-    const res4 = await request(app).put(`/recipes/${newRecipe.uniqueId}`).send(newRecipe);
+    await request(app)
+      .post('/recipes')
+      .auth(auth.username, auth.password)
+      .send(newRecipe())
+      .expect(httpStatus.OK);
+    await request(app)
+      .post('/recipes')
+      .auth(auth.username, auth.password)
+      .send(newRecipe())
+      .expect(httpStatus.OK);
+    const res3 = await request(app)
+      .post('/recipes')
+      .auth(auth.username, auth.password)
+      .send(newRecipe())
+      .expect(httpStatus.OK);
+    const res4 = await request(app)
+      .put(`/recipes/${res3.uniqueId}`)
+      .auth(auth.username, auth.password)
+      .send(newRecipe());
 
     expect(res4.body).toBeDefined();
     expect(res4.body.code).toEqual(429);
