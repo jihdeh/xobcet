@@ -1,5 +1,11 @@
-export const RECIPES = '/recipes';
+const RECIPES = '/recipes';
 
-export const RECIPES_ID = '/receipes/:id';
+const RECIPES_ID = '/recipes/:id';
 
-export const RECIPES_RATING = `${RECIPES_ID}/ratings`;
+const RECIPES_RATING = `${RECIPES_ID}/ratings`;
+
+module.exports = {
+  RECIPES,
+  RECIPES_ID,
+  RECIPES_RATING,
+};

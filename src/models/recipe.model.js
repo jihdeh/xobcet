@@ -25,7 +25,7 @@ const recipeSchema = mongoose.Schema(
     difficulty: {
       type: Number,
       validate(value) {
-        if (!(value >= 1) && !(value <= 3)) {
+        if (!(value >= 1 && value <= 3)) {
           throw new Error('Difficulty is not in range 1 - 3');
         }
       },

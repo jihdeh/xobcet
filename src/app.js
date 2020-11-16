@@ -9,6 +9,7 @@ const {
   rateRecipe,
 } = require('./controllers/recipes.js');
 const apiQuota = require('./middleware/rateLimiter.js');
+const { RECIPES, RECIPES_ID, RECIPES_RATING } = require('./routes.js');
 const {
   createRecipeValidation,
   updateRecipeValidation,
@@ -17,16 +18,13 @@ const {
 
 const { Servlets: app, Server: Core } = server();
 
-app.get('/recipes', getRecipes);
+app.get(RECIPES, getRecipes);
+app.post(RECIPES, apiQuota, createRecipeValidation, createRecipe);
 
-app.get('/recipes/:id', getRecipe);
+app.get(RECIPES_ID, getRecipe);
+app.put(RECIPES_ID, apiQuota, updateRecipeValidation, updateRecipe);
+app.delete(RECIPES_ID, apiQuota, deleteRecipe);
 
-app.post('/recipes', apiQuota, createRecipeValidation, createRecipe);
-
-app.put('/recipes/:id', apiQuota, updateRecipeValidation, updateRecipe);
-
-app.delete('/recipes/:id', apiQuota, deleteRecipe);
-
-app.post('/recipes/:id/rating', apiQuota, rateRecipeValidation, rateRecipe);
+app.post(RECIPES_RATING, apiQuota, rateRecipeValidation, rateRecipe);
 
 module.exports = { app, Core };

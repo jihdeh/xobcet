@@ -4,10 +4,9 @@ const request = require('supertest');
 const faker = require('faker');
 const httpStatus = require('http-status');
 const IoRedis = require('ioredis');
-// const httpMocks = require('node-mocks-http');
+const RateLimiterLib = require('async-ratelimiter');
 
 jest.mock('ioredis', () => {
-  // eslint-disable-next-line no-unused-vars
   const Redis = require('ioredis-mock');
   if (typeof Redis === 'object') {
     // the first mock is an ioredis shim because ioredis-mock depends on it
@@ -22,9 +21,27 @@ jest.mock('ioredis', () => {
   };
 });
 
+jest.mock('async-ratelimiter', () => {
+  return function () {
+    const rateClass = class RateLimiter {
+      constructor() {
+        this.get = {};
+      }
+
+      static get() {
+        return {
+          total: 0,
+          remaining: 1,
+          reset: true,
+        };
+      }
+    };
+    return rateClass;
+  };
+});
+
 const { Core: app } = require('../../src/app');
 const dbConfig = require('../utils/dbConfig');
-// const { Recipe } = require('../../src/models');
 const { insertRecipes, creatOneRecipe } = require('../fixtures/recipe.fixture');
 
 dbConfig();
@@ -36,7 +53,7 @@ describe('Recipe routes', () => {
     newRecipe = {
       name: faker.lorem.word(),
       prepTime: `${faker.random.number(60)} mins`,
-      difficulty: faker.random.number(3),
+      difficulty: faker.random.number({ min: 1, max: 3 }),
       vegetarian: faker.random.boolean(),
     };
   });
@@ -81,12 +98,82 @@ describe('Recipe routes', () => {
       expect(res.body.hasNextPage).toEqual(true);
       expect(res.body.hasPrevPage).toEqual(true);
     });
+
+    test('should return empty array if no list of results', async () => {
+      const res = await request(app).get('/recipes?limit=3&page=2').send().expect(httpStatus.OK);
+      expect(res.body.docs).toHaveLength(0);
+      expect(res.body.totalDocs).toEqual(3);
+      expect(res.body.hasNextPage).toEqual(false);
+      expect(res.body.hasPrevPage).toEqual(true);
+    });
   });
 
   describe('POST /recipes', () => {
     test('should create a new recipe', async () => {
-      // const res = await request(app).post('/recipes').send(newRecipe);
-      // expect(res.body.name).toBeDefined();
+      const res = await request(app).post('/recipes').send(newRecipe).expect(httpStatus.OK);
+      expect(res.body.name).toBeDefined();
+      expect(res.body.uniqueId).toBeDefined();
+      expect(res.body.difficulty).toBeDefined();
+    });
+
+    test('should throw an error when required recipe field "name" is missing', async () => {
+      newRecipe.name = '';
+      const res = await request(app)
+        .post('/recipes')
+        .send(newRecipe)
+        .expect(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.body[0].message).toEqual('"name" is not allowed to be empty');
+    });
+
+    test('should throw an error when required recipe field "difficulty" is wrong', async () => {
+      newRecipe.difficulty = 10;
+      const res = await request(app)
+        .post('/recipes')
+        .send(newRecipe)
+        .expect(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.body[0].message).toEqual('"difficulty" must be less than or equal to 3');
+    });
+  });
+
+  describe('PUT /recipes', () => {
+    let recipe = {};
+    beforeEach(async () => {
+      recipe = await creatOneRecipe(newRecipe);
+    });
+
+    test('should update recipe', async () => {
+      recipe.name = 'Regalia';
+      const res = await request(app).put(`/recipes/${recipe.uniqueId}`).send(newRecipe);
+      expect(res.text).toBeDefined();
+      expect(res.text).toEqual('Recipe updated');
+    });
+
+    test('should throw on update recipe with wrong id', async () => {
+      recipe.name = 'Regalia';
+      const res = await request(app).put(`/recipes/errorId`).send(newRecipe);
+
+      expect(res.body.code).toEqual(501);
+      expect(res.body.message).toEqual('Recipe not updated');
+    });
+  });
+
+  describe('DELETE /recipes', () => {
+    let recipe = {};
+
+    beforeEach(async () => {
+      recipe = await creatOneRecipe(newRecipe);
+    });
+
+    test('should delete a  recipe', async () => {
+      const res = await request(app).delete(`/recipes/${recipe.uniqueId}`).send(recipe);
+      expect(res.text).toBeDefined();
+      expect(res.text).toEqual('Recipe deleted');
+    });
+
+    test('should throw on delete a recipe with wrong id', async () => {
+      const res = await request(app).delete(`/recipes/wrongid`).send(recipe);
+      expect(res.body.code).toEqual(501);
+      expect(res.body.message).toEqual('Recipe not deleted');
     });
   });
 });

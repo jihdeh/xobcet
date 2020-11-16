@@ -6,7 +6,7 @@ const ratingSchema = mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!(value >= 1) && !(value <= 5)) {
+        if (!(value >= 1 && value <= 5)) {
           throw new Error('Rating is not in range 1 - 5');
         }
       },
