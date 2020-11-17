@@ -142,6 +142,17 @@ const rateRecipe = catchAsync(async (req, res) => {
   }
 });
 
+const searchRecipe = catchAsync(async (req, res) => {
+  const { name, difficulty, prepTime, vegetarian } = req.query;
+  const search = await Recipe.find({
+    ...(name && { $text: { $search: name } }),
+    ...(difficulty && { difficulty }),
+    ...(prepTime && { prepTime }),
+    ...(vegetarian && { vegetarian }),
+  });
+  res.json(search);
+});
+
 module.exports = {
   getRecipes,
   getRecipe,
@@ -149,4 +160,5 @@ module.exports = {
   updateRecipe,
   deleteRecipe,
   rateRecipe,
+  searchRecipe,
 };

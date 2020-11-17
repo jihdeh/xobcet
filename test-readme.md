@@ -59,7 +59,7 @@ These are some aspects we pay particular attention to:
 
 - You **MUST** use packages, but you **MUST NOT** use a web-app framework or microframework. 
 - The API **MUST** return valid JSON and **MUST** follow the endpoints set out above.
-- You **MUST** write testable code and demonstrate unit testing it 
+- You **MUST** write testable code and demonstrate unit testing it
 - You **SHOULD** pay attention to best security practices.
 - You **SHOULD** follow SOLID principles where appropriate.
 - You do **NOT** have to build a UI for this API.

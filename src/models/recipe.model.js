@@ -16,7 +16,6 @@ const recipeSchema = mongoose.Schema(
       type: String,
       unique: true,
       required: true,
-      index: 1,
     },
     prepTime: {
       type: String,
@@ -53,6 +52,8 @@ recipeSchema.methods.transform = function () {
 };
 
 recipeSchema.plugin(mongoosePaginate);
+
+recipeSchema.index({ name: 'text' });
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 
