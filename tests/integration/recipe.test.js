@@ -89,24 +89,23 @@ describe('Recipe routes', () => {
     test('should paginate recipe result', async () => {
       const res = await request(app).get('/recipes?limit=1').send().expect(httpStatus.OK);
       expect(res.body.docs).toHaveLength(1);
-      expect(res.body.totalDocs).toEqual(3);
+      expect(res.body.totalDocs).toBeGreaterThanOrEqual(3);
       expect(res.body.hasNextPage).toEqual(true);
     });
 
     test('should fetch next list of recipe results', async () => {
       const res = await request(app).get('/recipes?limit=1&page=2').send().expect(httpStatus.OK);
       expect(res.body.docs).toHaveLength(1);
-      expect(res.body.totalDocs).toEqual(3);
+      expect(res.body.totalDocs).toBeGreaterThanOrEqual(3);
       expect(res.body.hasNextPage).toEqual(true);
       expect(res.body.hasPrevPage).toEqual(true);
     });
 
     test('should return empty array if no list of results', async () => {
-      const res = await request(app).get('/recipes?limit=3&page=2').send().expect(httpStatus.OK);
+      const res = await request(app).get('/recipes?limit=3&page=10').send().expect(httpStatus.OK);
       expect(res.body.docs).toHaveLength(0);
-      expect(res.body.totalDocs).toEqual(3);
+      expect(res.body.totalDocs).toBeGreaterThanOrEqual(3);
       expect(res.body.hasNextPage).toEqual(false);
-      expect(res.body.hasPrevPage).toEqual(true);
     });
   });
 
@@ -211,6 +210,30 @@ describe('Recipe routes', () => {
         .send(recipe);
       expect(res.body.code).toEqual(501);
       expect(res.body.message).toEqual('Recipe not deleted');
+    });
+  });
+
+  describe('SEARCH /recipes', () => {
+    test('should return result for name search', async () => {
+      const recipe = await creatOneRecipe(newRecipe);
+      const res = await request(app).get(`/search/recipes?name=${recipe.name}`).send();
+      expect(res.body).toBeDefined();
+      expect(res.body).toHaveLength(1);
+    });
+
+    test('should return empty array for no result search', async () => {
+      const res = await request(app).get(`/search/recipes?name=nothing`).send();
+      expect(res.body).toHaveLength(0);
+    });
+
+    test('should return result for more than one search query', async () => {
+      const recipe = await creatOneRecipe(newRecipe);
+
+      const res = await request(app)
+        .get(`/search/recipes?name=${recipe.name}&vegetarian=${recipe.vegetarian}`)
+        .send();
+      expect(res.body).toBeDefined();
+      expect(res.body).toHaveLength(1);
     });
   });
 });
