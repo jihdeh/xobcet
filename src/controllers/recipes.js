@@ -55,7 +55,7 @@ const getRecipes = catchAsync(async (req, res) => {
 const createRecipe = catchAsync(async (req, res) => {
   try {
     const newRecipe = await Recipe.create(req.body);
-    await Redis.delete();
+    await Redis.delete(); //flush cache
     res.json(newRecipe);
   } catch (error) {
     throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
@@ -79,6 +79,7 @@ const updateRecipe = catchAsync(async (req, res) => {
     );
 
     if (update.nModified) {
+      await Redis.delete(); //flush cache
       res.send('Recipe updated');
     } else {
       throw new AppError(httpStatus.NOT_IMPLEMENTED, 'Recipe not updated');

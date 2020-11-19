@@ -6,3 +6,4 @@ services:
     command: yarn start
     depends_on:
       - mongosetup
+      - redis
