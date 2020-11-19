@@ -46,3 +46,7 @@ Please [check here](api.md) for documentation on the api endpoints.
 Built on top of nodejs http.server module, i created a mini package to wrap the module to reuse in this project. This helps writing out the endpoints receiving requests neater, modular, and testable.
 
 Link to module can be found here [https://github.com/jihdeh/mini-servlet](https://github.com/jihdeh/mini-servlet)
+
+### Issues
+
+- If you run into an issue with docker, saying ERROR: toomanyrequests: Too Many Requests., you'd have to create an account with docker and then run docker login to increase the pull requests from 100 to 200, if you have already an account, then well you have to either upgrade or wait 6hrs to try again. [https://www.docker.com/increase-rate-limits](https://www.docker.com/increase-rate-limits)
