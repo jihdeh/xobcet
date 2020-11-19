@@ -21,6 +21,8 @@ To run the tests,
 
 Check the *package.json* scripts for linter and prettier commands to run.
 
+For the sake of this test, the contents of env.example is auto copied into an .env file on command run
+
 ### Database
 
 Database used is MongoDB, and the ODM used is mongoose.
