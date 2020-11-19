@@ -3,19 +3,22 @@
 
 ### Getting started
 
+ - git clone
+ - cd into project directory
+
 Project is contained using docker, go ahead and install docker if you don't have it on your system.
 
 To start the app in production mode,
 
-  - RUN `yarn prod`
+  - RUN `yarn prod` or `npm run prod`
 
 To start the app in development mode,
 
-  - Run `yarn ddev`
+  - Run `yarn ddev` or `npm run ddev`
 
 To run the tests,
 
-  - RUN `yarn dtest`
+  - RUN `yarn dtest` or `npm run dtest`
 
   This runs both integration and unit tests.
 
@@ -26,8 +29,9 @@ For the sake of this test, the contents of env.example is auto copied into an .e
 ### Database
 
 Database used is MongoDB, and the ODM used is mongoose.
+The database is configured to run in replicasets, i.e primary, secondary.
 
-REDIS is also used in the project, mostly for caching responses.
+REDIS is also used in the project, mostly for caching responses. Caching expires after 1 minute.
 
 ### Authentication
 

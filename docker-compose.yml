@@ -6,8 +6,6 @@ services:
       image: recipe-app
       ports:
         - '3000:3000'
-      volumes:
-        - .:/usr/src/recipe-app
       networks:
         - node-network
 
