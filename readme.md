@@ -32,4 +32,4 @@ Cursor based pagination is being used as that's faster to using offet pagination
 
 ## API DOCUMENTATION
 
-Please check here for documentation on the api endpoints.
+Please [check here](api.md) for documentation on the api endpoints.
