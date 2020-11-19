@@ -143,13 +143,20 @@ const rateRecipe = catchAsync(async (req, res) => {
 });
 
 const searchRecipe = catchAsync(async (req, res) => {
-  const { name, difficulty, prepTime, vegetarian } = req.query;
-  const search = await Recipe.find({
-    ...(name && { $text: { $search: name } }),
-    ...(difficulty && { difficulty }),
-    ...(prepTime && { prepTime }),
-    ...(vegetarian && { vegetarian }),
-  });
+  const { name, difficulty, prepTime, vegetarian, limit = 10, page = 1 } = req.query;
+  const search = await Recipe.paginate(
+    {
+      ...(name && { $text: { $search: name } }),
+      ...(difficulty && { difficulty }),
+      ...(prepTime && { prepTime }),
+      ...(vegetarian && { vegetarian }),
+    },
+    {
+      limit,
+      page,
+      lean: true,
+    },
+  );
   res.json(search);
 });
 

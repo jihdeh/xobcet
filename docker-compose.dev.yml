@@ -4,3 +4,6 @@ services:
   recipe-app:
     container_name: recipe-app-dev
     command: yarn dev
+    depends_on:
+      - mongosetup
+      - redis

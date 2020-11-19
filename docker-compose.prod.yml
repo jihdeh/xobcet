@@ -4,3 +4,5 @@ services:
   recipe-app:
     container_name: recipe-app-prod
     command: yarn start
+    depends_on:
+      - mongosetup

@@ -16,7 +16,7 @@
     "prettier:fix": "prettier --write **/*.js",
     "ddev": "yarn copyenv && docker-compose -f docker-compose.yml -f docker-compose.db.yml -f docker-compose.dev.yml up",
     "copyenv": "cp .env.example .env",
-    "prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up",
+    "prod": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -f docker-compose.prod.yml up",
     "dtest": "yarn copyenv && docker-compose -f docker-compose.yml -f docker-compose.db.yml -f docker-compose.test.yml up && docker-compose stop"
   },
   "devDependencies": {
