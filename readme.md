@@ -35,6 +35,12 @@ Authentication mechanism uses the Basic Auth method, requiring you to pass a use
 
 Cursor based pagination is being used as that's faster to using offet pagination.
 
-## API Documentation
+### API Documentation
 
 Please [check here](api.md) for documentation on the api endpoints.
+
+### Server
+
+Built on top of nodejs http.server module, i created a mini package to wrap the module to reuse in this project. This helps writing out the endpoints receiving requests neater, modular, and testable.
+
+Link to module can be found here [https://github.com/jihdeh/mini-servlet](https://github.com/jihdeh/mini-servlet)
