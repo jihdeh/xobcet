@@ -6,9 +6,15 @@ services:
       image: recipe-app
       ports:
         - '3000:3000'
+      volumes:
+        - .:/usr/src/recipe-app
+        - rcp_node_modules:/usr/src/recipe-app/node_modules
       networks:
         - node-network
 
 networks:
   node-network:
     driver: bridge
+
+volumes:
+  rcp_node_modules:

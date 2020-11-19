@@ -55,6 +55,7 @@ const getRecipes = catchAsync(async (req, res) => {
 const createRecipe = catchAsync(async (req, res) => {
   try {
     const newRecipe = await Recipe.create(req.body);
+    await Redis.delete();
     res.json(newRecipe);
   } catch (error) {
     throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);

@@ -29,6 +29,10 @@ class RedisCache {
       return parseValue;
     }
   }
+
+  delete() {
+    return this._redis.flushall();
+  }
 }
 
 module.exports = new RedisCache();
