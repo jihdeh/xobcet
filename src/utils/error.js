@@ -1,17 +1,6 @@
 const httpStatus = require('http-status');
 const config = require('../config/config');
 const logger = require('../config/logger');
-const AppError = require('./AppError');
-
-const errorConverter = (err, req, res, next) => {
-  let error = err;
-  if (!(error instanceof AppError)) {
-    const statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
-    error = new AppError(statusCode, message, false, err.stack);
-  }
-  next(error);
-};
 
 const errorHandler = (err, req, res) => {
   let { statusCode = httpStatus.BAD_REQUEST, message } = err;
@@ -35,6 +24,5 @@ const errorHandler = (err, req, res) => {
 };
 
 module.exports = {
-  errorConverter,
   errorHandler,
 };

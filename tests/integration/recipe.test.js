@@ -83,7 +83,7 @@ describe('Recipe routes', () => {
 
     test('should return 200 and all recipes', async () => {
       const res = await request(app).get('/recipes').send().expect(httpStatus.OK);
-      expect(res.body.docs).toHaveLength(3);
+      expect(res.body.docs.length).toBeGreaterThanOrEqual(3);
     });
 
     test('should paginate recipe result', async () => {
@@ -218,12 +218,12 @@ describe('Recipe routes', () => {
       const recipe = await creatOneRecipe(newRecipe);
       const res = await request(app).get(`/search/recipes?name=${recipe.name}`).send();
       expect(res.body).toBeDefined();
-      expect(res.body).toHaveLength(1);
+      expect(res.body.docs).toHaveLength(1);
     });
 
     test('should return empty array for no result search', async () => {
       const res = await request(app).get(`/search/recipes?name=nothing`).send();
-      expect(res.body).toHaveLength(0);
+      expect(res.body.docs).toHaveLength(0);
     });
 
     test('should return result for more than one search query', async () => {
@@ -233,7 +233,7 @@ describe('Recipe routes', () => {
         .get(`/search/recipes?name=${recipe.name}&vegetarian=${recipe.vegetarian}`)
         .send();
       expect(res.body).toBeDefined();
-      expect(res.body).toHaveLength(1);
+      expect(res.body.docs).toHaveLength(1);
     });
   });
 });
