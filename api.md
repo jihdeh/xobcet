@@ -64,15 +64,18 @@
             -   vegetarian: boolean
             -   page - number(0, *9), to set skip position
             -   limit: number (0,*9), number of results to be returned per page. DEFAULT: 10
-            
-ERROR CODES
 
+RESPONSE CODES
     200 - OK
+
+
+ERROR CODES
     400 - BAD REQUEST
     404 - NOT FOUND
     500 - SERVER ERROR
     503 - NOT IMPLEMENTED
-            
+
+
 ERROR TYPES
 
     'Recipe not found'
