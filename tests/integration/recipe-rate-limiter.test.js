@@ -55,7 +55,7 @@ describe('Rate Limiter Test', () => {
       .send(newRecipe())
       .expect(httpStatus.OK);
     const res4 = await request(app)
-      .put(`/recipes/${res3.uniqueId}`)
+      .put(`/recipes/${res3.body.uniqueId}`)
       .auth(auth.username, auth.password)
       .send(newRecipe());
 

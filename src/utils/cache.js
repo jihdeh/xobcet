@@ -30,8 +30,8 @@ class RedisCache {
     }
   }
 
-  delete() {
-    return this._redis.flushall();
+  delete(key) {
+    return this._redis.unlink(key);
   }
 }
 

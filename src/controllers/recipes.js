@@ -21,16 +21,27 @@ const getRecipe = catchAsync(async (req, res) => {
   }
 });
 
+const resultLimit = 10;
+const resultPage = 1;
+/**
+ * Generate cache keys for cache results
+ * @param {Number} limit
+ * @param {Number} page
+ */
+const getRecipeCacheKey = (limit = resultLimit, page = resultPage) =>
+  `get-recipes-${limit}-${page}`;
+
 /**
  * Contoller to get all recipes
  * @public
  * @returns {Array(Recipe)} An array of Recipes
  */
 const getRecipes = catchAsync(async (req, res) => {
-  const { limit = 10, page = 1 } = req.query;
-  const cacheKey = `get-recipes-${limit}-${page}`;
+  const { limit = resultLimit, page = resultPage } = req.query;
+  const cacheKey = getRecipeCacheKey(limit, page);
 
   const getFromCache = await Redis.get(cacheKey);
+
   if (getFromCache) {
     return res.json(getFromCache);
   }
@@ -55,7 +66,7 @@ const getRecipes = catchAsync(async (req, res) => {
 const createRecipe = catchAsync(async (req, res) => {
   try {
     const newRecipe = await Recipe.create(req.body);
-    await Redis.delete(); //flush cache
+    await Redis.delete(getRecipeCacheKey()); //flush cache
     res.json(newRecipe);
   } catch (error) {
     throw new AppError(httpStatus.NOT_IMPLEMENTED, error.message);
@@ -79,7 +90,7 @@ const updateRecipe = catchAsync(async (req, res) => {
     );
 
     if (update.nModified) {
-      await Redis.delete(); //flush cache
+      await Redis.delete(getRecipeCacheKey()); //flush cache
       res.send('Recipe updated');
     } else {
       throw new AppError(httpStatus.NOT_IMPLEMENTED, 'Recipe not updated');
@@ -101,6 +112,7 @@ const deleteRecipe = catchAsync(async (req, res) => {
     });
 
     if (deleteAction.n) {
+      Redis.delete(getRecipeCacheKey()); //flush cache
       res.send('Recipe deleted');
     } else {
       throw new AppError(httpStatus.NOT_IMPLEMENTED, 'Recipe not deleted');
